@@ -11,3 +11,13 @@
 /target/maven-archiver/pom.properties
 /target/classes/com/tool/common/SystemConfig.class
 /target/classes/com/tool/client/test.png
+/target/classes/META-INF/additional-spring-configuration-metadata.json
+/target/classes/application.properties
+/target/classes/com/tool/client/BootClient.class
+/target/classes/com/tool/EasyToolApplication.class
+/target/classes/com/tool/client/IFrame.class
+/target/classes/com/tool/client/IndexFrame$1.class
+/target/classes/com/tool/service/IService.class
+/target/classes/com/tool/service/service.ini
+/target/classes/com/tool/client/SystemManagerFrame.class
+/target/classes/com/tool/service/impl/SystemManagerServiceImpl.class

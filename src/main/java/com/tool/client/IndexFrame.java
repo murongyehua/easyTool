@@ -1,11 +1,23 @@
 package com.tool.client;
 
+import cn.hutool.core.io.FileUtil;
+import com.tool.service.IService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+@Component("indexFrame")
 public class IndexFrame extends CommonFrame {
 
+    @Autowired
+    private Map<String, IFrame> frameMap;
 
     @Override
     public void initFrame() {
@@ -32,7 +44,7 @@ public class IndexFrame extends CommonFrame {
         JPanel topPanel = new JPanel();
         topPanel.setBackground(Color.CYAN);
         topPanel.setSize(this.getWidth()-10, 40);
-        JLabel label = new JLabel("welcome for use Easy-Tool!");
+        JLabel label = new JLabel("welcome to use Easy-Tool!");
         label.setSize(this.getWidth(), 50);
         topPanel.add(label);
         return topPanel;
@@ -56,10 +68,7 @@ public class IndexFrame extends CommonFrame {
         JPanel menu = new JPanel();
         menu.setSize(this.getWidth()-10, 375);
         menu.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        for (int i=0; i<20; i++) {
-            MenuButton setting = new MenuButton("功能设置", new ImageIcon(Objects.requireNonNull(IndexFrame.class.getResource("test.png"))));
-            menu.add(setting);
-        }
+        this.renderMenu().forEach(menu::add);
         mainPanel.add(BorderLayout.NORTH, menuName);
         mainPanel.add(BorderLayout.CENTER, menu);
         return mainPanel;
@@ -77,6 +86,26 @@ public class IndexFrame extends CommonFrame {
         copyRight.setHorizontalAlignment(SwingConstants.CENTER);
         footPanel.add(copyRight);
         return footPanel;
+    }
+
+    private List<MenuButton> renderMenu() {
+        List<String> serviceConfigLines = FileUtil.readLines(Objects.requireNonNull(IService.class.getResource("service.ini")), "utf-8");
+        List<MenuButton> menuButtons = new LinkedList<>();
+        serviceConfigLines.forEach(serviceConfig -> {
+            String[] cs = serviceConfig.split("\\|\\|");
+            if ("1".equals(cs[3])) {
+                MenuButton menuButton = new MenuButton(cs[0], new ImageIcon(Objects.requireNonNull(IndexFrame.class.getResource(cs[1]))));
+                menuButton.addActionListener(new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        IFrame frame = frameMap.get(cs[2] + "Frame");
+                        frame.initFrame();
+                    }
+                });
+                menuButtons.add(menuButton);
+            }
+        });
+        return menuButtons;
     }
 
 }

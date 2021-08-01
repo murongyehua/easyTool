@@ -1,9 +1,12 @@
 package com.tool.client;
 
+import org.springframework.stereotype.Component;
+
 import javax.swing.*;
 import java.util.Objects;
 
-public class CommonFrame extends JFrame{
+@Component
+public class CommonFrame extends JFrame implements IFrame{
 
     public void initFrame() {
         this.setIconImage(new ImageIcon(Objects.requireNonNull(CommonFrame.class.getResource("k7.png"))).getImage());
