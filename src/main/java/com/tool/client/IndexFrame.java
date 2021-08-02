@@ -17,7 +17,7 @@ import java.util.Objects;
 public class IndexFrame extends CommonFrame {
 
     @Autowired
-    private Map<String, IFrame> frameMap;
+    private Map<String, CommonFrame> frameMap;
 
     @Override
     public void initFrame() {
@@ -98,7 +98,7 @@ public class IndexFrame extends CommonFrame {
                 menuButton.addActionListener(new AbstractAction() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        IFrame frame = frameMap.get(cs[2] + "Frame");
+                        CommonFrame frame = frameMap.get(cs[2] + "Frame");
                         frame.initFrame();
                     }
                 });

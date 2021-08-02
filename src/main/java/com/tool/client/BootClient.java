@@ -15,7 +15,7 @@ public class BootClient {
 
     @Autowired
     @Qualifier("indexFrame")
-    private IFrame indexFrame;
+    private CommonFrame indexFrame;
 
     @PostConstruct
     public void runApplication() {

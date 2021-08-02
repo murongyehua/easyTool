@@ -1,6 +1,5 @@
 package com.tool;
 
-import com.tool.client.IndexFrame;
 import com.tool.common.SystemConfig;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import org.springframework.boot.SpringApplication;
