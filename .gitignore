@@ -21,3 +21,12 @@
 /target/classes/com/tool/service/service.ini
 /target/classes/com/tool/client/SystemManagerFrame.class
 /target/classes/com/tool/service/impl/SystemManagerServiceImpl.class
+/target/classes/com/tool/client/clear.png
+/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst
+/target/easyTool-0.0.1-SNAPSHOT.jar
+/target/easyTool-0.0.1-SNAPSHOT.jar.original
+/target/classes/com/tool/common/ExecCMD.class
+/target/classes/com/tool/client/RubbishClearFrame.class
+/target/classes/com/tool/service/RubbishClearService.class
+/target/classes/com/tool/service/impl/RubbishClearServiceImpl.class
+/target/classes/com/tool/client/setting.png
