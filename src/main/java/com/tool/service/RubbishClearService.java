@@ -17,4 +17,16 @@ public interface RubbishClearService {
      */
     void clearForTencent();
 
+    /**
+     * 基础清理可清理的文件大小
+     * @return 大小，单位M
+     */
+    int canBaseClearSize();
+
+    /**
+     * 腾讯专清可清理的文件大小
+     * @return 大小，单位M
+     */
+    int canTencentClearSize();
+
 }
