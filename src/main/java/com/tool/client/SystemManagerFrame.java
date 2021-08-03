@@ -125,7 +125,7 @@ public class SystemManagerFrame extends CommonFrame{
 
         JTextArea suggestContent = new JTextArea(5, 45);
         suggestContent.setLineWrap(true);
-        suggestContent.setText("请将反馈内容发送到邮箱：murongyehua@163.com\r\n感谢使用和配合~");
+        suggestContent.setText("请将反馈内容发送到邮箱：murongyehua@163.com\r\n使用过程中发现的问题\r\n对未来新功能的期望\r\n都可以通过邮件发给我\r\n感谢使用和配合~");
         suggestContent.setEditable(false);
         JPanel suggestContentPanel = new JPanel();
         suggestContentPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 6, 6));
