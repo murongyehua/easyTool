@@ -49,8 +49,8 @@ public class RubbishClearFrame extends CommonFrame {
         JButton tencentClearBtn = new JButton("腾讯专清");
         tencentClearBtn.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.green));
         tencentClearBtn.addActionListener(e -> {
-            int option = JOptionPane.showConfirmDialog(null, "此操作会删除微信与QQ的所有账号数据(恢复到刚安装的状态)，确定继续吗？", "提示", JOptionPane.YES_NO_OPTION);
-            if (option == JOptionPane.YES_NO_OPTION) {
+            int option = JOptionPane.showConfirmDialog(null, "此操作会删除微信与QQ所有账号数据以及聊天记录(恢复到刚安装的状态)，确定继续吗？", "提示", JOptionPane.YES_NO_OPTION);
+            if (option == JOptionPane.YES_OPTION) {
                 rubbishClearServiceImpl.clearForTencent();
                 JOptionPane.showMessageDialog(null, "腾讯专清完成", "提示", JOptionPane.INFORMATION_MESSAGE);
                 tipLabelText.setText(this.getText());

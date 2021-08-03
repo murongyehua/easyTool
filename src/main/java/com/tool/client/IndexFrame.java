@@ -78,10 +78,9 @@ public class IndexFrame extends CommonFrame {
      * 底部
      * @return
      */
-    private JPanel getFootPanel() {
+    public static JPanel getFootPanel() {
         JPanel footPanel = new JPanel();
         footPanel.setBackground(Color.CYAN);
-        footPanel.setSize(this.getWidth()-10, 25);
         JLabel copyRight = new JLabel("@author murongyehua");
         copyRight.setHorizontalAlignment(SwingConstants.CENTER);
         footPanel.add(copyRight);
