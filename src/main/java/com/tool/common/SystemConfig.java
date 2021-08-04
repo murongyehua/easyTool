@@ -1,5 +1,10 @@
 package com.tool.common;
 
+import com.tool.service.IService;
+
+import java.io.File;
+import java.util.Objects;
+
 public class SystemConfig {
 
     public static String[] DEFAULT_FONT  = new String[]{
@@ -38,6 +43,8 @@ public class SystemConfig {
             ,"ComboBox.font"
     };
 
-
+    static File exeWorkFile = new File("service.ini");
+//    public static final String configPath = Objects.requireNonNull(IService.class.getResource("service.ini")).getPath();
+    public static final String configPath = exeWorkFile.getAbsolutePath();
 
 }

@@ -2,10 +2,12 @@ package com.tool.client;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.ZipUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.tool.common.NetCheckUtil;
+import com.tool.common.SystemConfig;
 import com.tool.service.IService;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -65,7 +69,7 @@ public class SystemManagerFrame extends CommonFrame{
         commitBtn.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
         commitBtn.setSize(150, 30);
         commitBtn.addActionListener(e -> {
-            FileUtil.writeLines(serviceConfigLines, Objects.requireNonNull(IService.class.getResource("service.ini")).getPath(), "utf-8", false);
+            FileUtil.writeLines(serviceConfigLines, SystemConfig.configPath, "utf-8", false);
             indexFrame.repaint();
             indexFrame.invalidate();
             indexFrame.validate();
@@ -74,7 +78,7 @@ public class SystemManagerFrame extends CommonFrame{
             } catch (InterruptedException interruptedException) {
                 interruptedException.printStackTrace();
             }
-            JOptionPane.showMessageDialog(null, "修改完成", "提示", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "修改完成，重新启动后生效", "提示", JOptionPane.INFORMATION_MESSAGE);
         });
         JPanel commitBtnPanel = new JPanel();
         commitBtnPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -106,7 +110,21 @@ public class SystemManagerFrame extends CommonFrame{
                 String updateContent = (String) jsonObject.get("updateContent");
                 int option = JOptionPane.showConfirmDialog(null, String.format("获取到最新版本: %s\r\n更新内容:\r\n%s\r\n\r\n是否立即更新？", newVersion, updateContent), "提示", JOptionPane.YES_NO_OPTION);
                 if (option == JOptionPane.YES_OPTION) {
-                    JOptionPane.showMessageDialog(null, "Sorry,联网更新功能还在开发中...目前只能手动更新呢", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    HttpUtil.downloadFile(String.format("http://%s:%s/toolServer/version/getNewVersion", toolServerHost, toolServerPort), new File("newVersion.zip"));
+                    try {
+                        this.update();
+                    }catch (Exception exception) {
+                        JOptionPane.showMessageDialog(null, "更新失败，请联系开发者!", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        return;
+                    }
+                    JOptionPane.showMessageDialog(null, "更新准备就绪，将自动退出，请稍候重新启动", "提示", JOptionPane.INFORMATION_MESSAGE);
+                    try {
+                        this.runUpdateExe();
+                    } catch (IOException ioException) {
+                        JOptionPane.showMessageDialog(null, "更新失败，请联系开发者!", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        return;
+                    }
+                    System.exit(0);
                 }
             }
         });
@@ -141,7 +159,7 @@ public class SystemManagerFrame extends CommonFrame{
     }
 
     private List<JPanel> functionPanels() {
-        serviceConfigLines = FileUtil.readLines(Objects.requireNonNull(IService.class.getResource("service.ini")), "utf-8");
+        serviceConfigLines = FileUtil.readLines(SystemConfig.configPath, "utf-8");
         List<JPanel> jPanels = new LinkedList<>();
         for (int index=1;index<serviceConfigLines.size();index++) {
             String lineContent = serviceConfigLines.get(index);
@@ -165,5 +183,24 @@ public class SystemManagerFrame extends CommonFrame{
             jPanels.add(jPanel);
         }
         return jPanels;
+    }
+
+    private void update() {
+        File newFile = new File("newVersion.zip");
+        File unzip = ZipUtil.unzip(newFile);
+        try {
+            File easyTool = new File(unzip.getAbsoluteFile() + "\\easyTool\\");
+            for (File file : Objects.requireNonNull(easyTool.listFiles())) {
+                FileUtil.move(file, new File(file.getName()), true);
+            }
+        } finally {
+            FileUtil.del(unzip);
+            FileUtil.del(newFile.getAbsoluteFile());
+        }
+
+    }
+
+    private void runUpdateExe() throws IOException {
+        Runtime.getRuntime().exec("updateTool.exe /k start");
     }
 }

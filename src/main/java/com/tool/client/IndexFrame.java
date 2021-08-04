@@ -1,6 +1,7 @@
 package com.tool.client;
 
 import cn.hutool.core.io.FileUtil;
+import com.tool.common.SystemConfig;
 import com.tool.service.IService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +90,7 @@ public class IndexFrame extends CommonFrame {
     }
 
     private List<MenuButton> renderMenu() {
-        List<String> serviceConfigLines = FileUtil.readLines(Objects.requireNonNull(IService.class.getResource("service.ini")), "utf-8");
+        List<String> serviceConfigLines = FileUtil.readLines(SystemConfig.configPath, "utf-8");
         List<MenuButton> menuButtons = new LinkedList<>();
         serviceConfigLines.forEach(serviceConfig -> {
             String[] cs = serviceConfig.split("\\|\\|");

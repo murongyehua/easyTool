@@ -1,0 +1,5 @@
+1. 新建easyTool目录
+2. 将打包好的新版exe重命名为easyTool_new.exe以及其他需要新添加的文件放入easyTool(不支持多级目录，都放一起)
+3. 将easyTool目录压缩为easyTool.zip
+4. 将zip放到服务器上指定目录
+5. 更新server版本并部署(两个程序配置文件中的版本号要一致)
