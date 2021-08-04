@@ -20,6 +20,8 @@ public class EasyToolApplication {
                 UIManager.put(SystemConfig.DEFAULT_FONT[i],new Font("微软雅黑", Font.PLAIN,14));
             }
             BeautyEyeLNFHelper.launchBeautyEyeLNF();
+            UIManager.put("TabbedPane.tabAreaInsets"
+                    , new javax.swing.plaf.InsetsUIResource(0,1,0,20));
         }
         catch(Exception e) {
             //TODO exception
