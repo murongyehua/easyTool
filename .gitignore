@@ -38,3 +38,5 @@
 /target/classes/com/tool/common/NetCheckUtil.class
 /target/classes/com/tool/client/video.png
 /target/classes/updateTip
+/target/classes/com/tool/client/dev.png
+/target/classes/com/tool/client/DevToolFrame.class
