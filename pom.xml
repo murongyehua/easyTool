@@ -57,9 +57,11 @@
             <artifactId>jna-platform</artifactId>
             <version>5.2.0</version>
         </dependency>
-
-
-
+        <dependency>
+            <groupId>org.bitbucket.johness</groupId>
+            <artifactId>java-cef</artifactId>
+            <version>49.87.win64.2</version>
+        </dependency>
     </dependencies>
 
     <build>

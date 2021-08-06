@@ -15,14 +15,10 @@ public class DevToolFrame extends CommonFrame{
         this.setDefaultCloseOperation(HIDE_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setOpacity(1f);
-//        JPanel mainPane = new JPanel();
-//        mainPane.setSize(this.getWidth(), this.getHeight());
-//        mainPane.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
         JTabbedPane tabPane = new JTabbedPane();
         tabPane.add("JSON", this.jsonPanel());
         tabPane.add("UUID", this.uuidPanel());
         tabPane.add("COLOR", this.colorPickPanel());
-//        mainPane.add(tabPane);
         Container container = this.getContentPane();
         container.add(tabPane);
 
