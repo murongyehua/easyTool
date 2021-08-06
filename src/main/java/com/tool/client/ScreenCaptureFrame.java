@@ -1,8 +1,13 @@
 package com.tool.client;
 
 import cn.hutool.core.util.StrUtil;
-import com.melloware.jintellitype.JIntellitype;
 import com.sun.awt.AWTUtilities;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinUser;
+import com.tool.common.ImageUtil;
+import com.tool.common.ThreadPoolManager;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -10,10 +15,16 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 @Component("screenCaptureFrame")
 public class ScreenCaptureFrame extends CommonFrame {
+
+    private static WinUser.HHOOK hhk;
+    final static User32 lib = User32.INSTANCE;
+    private final List<Integer> activeKey = new LinkedList<>();
 
     JButton button;
 
@@ -28,36 +39,60 @@ public class ScreenCaptureFrame extends CommonFrame {
         mainPanel.setLayout(new BorderLayout());
         // top
         JPanel topPanel = new JPanel();
-        JTextArea useTip = new JTextArea(3,45);
+        topPanel.setSize(this.getWidth(), 200);
+        JTextArea useTip = new JTextArea(6,45);
         JLabel useTipLabel = new JLabel("使用说明");
-        useTip.setText("点击截图按钮或者使用快捷键开启截图" +
+        useTip.setText("在截图助手开启后，点击截图按钮或者使用快捷键Alt+X开启截图(暂不支持自定义快捷键..orz)" +
                 StrUtil.CRLF + "在截图状态下，可以用鼠标左键划定最终截图区域" +
-                StrUtil.CRLF + "双击鼠标左键确定截图，鼠标右键取消截图");
+                StrUtil.CRLF + "双击鼠标左键确定截图，鼠标右键取消截图" +
+                StrUtil.CRLF + "所截图片会在新窗口打开，可以右键图片进行置顶/取消置顶/关闭操作" +
+                StrUtil.CRLF + "同时该图片会自动复制到剪切板~");
         topPanel.add(useTipLabel);
         topPanel.add(useTip);
         useTip.setEditable(false);
         // center
         JPanel centerPanel = new JPanel();
         button = new JButton("截图");
-        JLabel key = new JLabel("快捷键: Alt + ");
-        JTextField keyContent = new JTextField();
         centerPanel.add(button);
         mainPanel.add(BorderLayout.NORTH, topPanel);
         mainPanel.add(BorderLayout.CENTER, centerPanel);
         this.getContentPane().add(mainPanel);
         //鼠标点击按钮，new 一个ScreenFrame，设置可见，
         button.addActionListener(e -> activeCat());
-        startHotKey();
+        ThreadPoolManager.addBaseTask(this::startHotKey);
         setVisible(true);
     }
 
     private void startHotKey() {
-        JIntellitype.getInstance().addHotKeyListener(i -> {
-            if (i == 88) {
-                activeCat();
+        WinDef.HMODULE hMod = Kernel32.INSTANCE.GetModuleHandle(null);
+
+        // 按下
+        // 抬起
+        WinUser.LowLevelKeyboardProc keyBroadHook = (nCode, wParam, info) -> {
+            if (!this.isVisible()) {
+                Thread.interrupted();
+                return lib.CallNextHookEx(hhk, nCode, wParam, null);
             }
-        });
-        JIntellitype.getInstance().registerHotKey(88, JIntellitype.MOD_CONTROL, (int)'B');
+            if (User32.WM_SYSKEYDOWN == wParam.intValue()) {
+                // 按下
+                if (!activeKey.contains(info.vkCode)) {
+                    activeKey.add(info.vkCode);
+                    if (activeKey.contains(User32.VK_LMENU) && activeKey.contains(KeyEvent.VK_X)) {
+                        activeCat();
+                    }
+                }
+            }
+            if (User32.WM_SYSKEYUP == wParam.intValue()) {
+                // 抬起
+                activeKey.remove(new Integer(info.vkCode));
+            }
+            return lib.CallNextHookEx(hhk, nCode, wParam, null);
+        };
+        hhk = lib.SetWindowsHookEx(User32.WH_KEYBOARD_LL, keyBroadHook, hMod, 0);
+        WinUser.MSG msg = new WinUser.MSG ();
+        while (lib.GetMessage(msg, null, 0, 0) != 0) {
+        }
+        lib.UnhookWindowsHookEx(hhk);
     }
 
     private void activeCat() {
@@ -141,9 +176,10 @@ class ScreenFrame extends JFrame {
         private void cutScreens() throws Exception {
             Robot ro = new Robot();
             if (sx < ex && sy < ey)//右下角
-                getImage = ro.createScreenCapture(new Rectangle(culIndex(sx), culIndex(sy), culIndex(ex) - culIndex(sx), culIndex(ey) - culIndex(sy)));
+                getImage = ro.createScreenCapture(new Rectangle(culIndex(sx + 2), culIndex(sy + 2), culIndex(ex) - culIndex(sx) - 3, culIndex(ey) - culIndex(sy) - 3));
             else                  //左上角
-                getImage = ro.createScreenCapture(new Rectangle(culIndex(ex), culIndex(ey), culIndex(sx) - culIndex(ex), culIndex(sy) - culIndex(ey)));
+                getImage = ro.createScreenCapture(new Rectangle(culIndex(ex + 2), culIndex(ey + 2), culIndex(sx) - culIndex(ex) - 3, culIndex(sy) - culIndex(ey) - 3));
+            ImageUtil.setClipboardImage(new JFrame(), getImage);
             new ShowImageFrame(getImage).repaint();
             dispose();
         }
@@ -199,7 +235,7 @@ class ShowImageFrame extends JFrame {
         this.addMouseListener(new MouseAdapter() {
             // 按下（mousePressed 不是点击，而是鼠标被按下没有抬起）
             public void mousePressed(MouseEvent e) {
-// 当鼠标按下的时候获得窗口当前的位置
+                // 当鼠标按下的时候获得窗口当前的位置
                 origin.x = e.getX();
                 origin.y = e.getY();
             }
@@ -208,6 +244,51 @@ class ShowImageFrame extends JFrame {
             public void mouseDragged(MouseEvent e) {
                 Point p = getLocation();
                 setLocation(p.x + e.getX() - origin.x, p.y + e.getY() - origin.y);
+            }
+        });
+
+        JFrame temp = this;
+        final JPopupMenu jp = new JPopupMenu();
+        JMenuItem holdTop = new JMenuItem("置顶");
+        holdTop.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                if (e.getButton() == MouseEvent.BUTTON1)
+                {
+                    if (holdTop.getText().length() == 2) {
+                        temp.setAlwaysOnTop(true);
+                        holdTop.setText("取消置顶");
+                    } else {
+                        temp.setAlwaysOnTop(false);
+                        holdTop.setText("置顶");
+                    }
+                }
+            }
+        });
+        JMenuItem close = new JMenuItem("关闭");
+        close.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                if (e.getButton() == MouseEvent.BUTTON1)
+                {
+                    temp.dispose();
+                }
+            }
+        });
+        jp.add(holdTop);
+        jp.add(close);
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON3)
+                {
+                    // 弹出菜单
+                    jp.show(temp, e.getX(), e.getY());
+                }
             }
         });
     }

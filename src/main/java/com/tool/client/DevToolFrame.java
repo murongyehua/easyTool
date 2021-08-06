@@ -35,18 +35,21 @@ public class DevToolFrame extends CommonFrame{
     private JPanel jsonPanel() {
         JPanel jsonPanel = new JPanel();
         jsonPanel.setBackground(Color.YELLOW);
+        jsonPanel.add(new JLabel("敬请期待.."));
         return jsonPanel;
     }
 
     private JPanel uuidPanel() {
         JPanel uuidPanel = new JPanel();
         uuidPanel.setBackground(Color.RED);
+        uuidPanel.add(new JLabel("敬请期待.."));
         return uuidPanel;
     }
 
     private JPanel colorPickPanel() {
         JPanel colorPickPanel = new JPanel();
         colorPickPanel.setBackground(Color.GREEN);
+        colorPickPanel.add(new JLabel("敬请期待.."));
         return colorPickPanel;
     }
 }

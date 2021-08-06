@@ -40,3 +40,17 @@
 /target/classes/updateTip
 /target/classes/com/tool/client/dev.png
 /target/classes/com/tool/client/DevToolFrame.class
+/target/classes/com/tool/client/screenCapture.png
+/target/classes/com/tool/service/screenCaptureConfig.ini
+/target/classes/com/tool/client/ScreenCaptureFrame.class
+/target/classes/com/tool/client/ScreenFrame$DrawRect.class
+/target/classes/com/tool/client/ScreenFrame.class
+/target/classes/com/tool/client/ShowImageFrame$1.class
+/target/classes/com/tool/client/ShowImageFrame$2.class
+/target/classes/com/tool/client/ShowImageFrame$3.class
+/target/classes/com/tool/client/ShowImageFrame$4.class
+/target/classes/com/tool/client/ShowImageFrame$5.class
+/target/classes/com/tool/client/ShowImageFrame.class
+/target/classes/com/tool/common/ThreadPoolManager.class
+/target/classes/com/tool/common/ImageUtil$1.class
+/target/classes/com/tool/common/ImageUtil.class
