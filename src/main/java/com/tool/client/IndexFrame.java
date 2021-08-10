@@ -2,14 +2,12 @@ package com.tool.client;
 
 import cn.hutool.core.io.FileUtil;
 import com.tool.common.SystemConfig;
-import com.tool.service.IService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +22,9 @@ public class IndexFrame extends CommonFrame {
     @Override
     public void initFrame() {
         super.initFrame();
+        setTray("Easy-Tool", this.getIconImage());
         this.setTitle("Easy-Tool");
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
         Container container = this.getContentPane();
         JPanel mainPanel = new JPanel();
@@ -33,7 +32,7 @@ public class IndexFrame extends CommonFrame {
         mainPanel.setSize(this.getWidth(), this.getHeight());
         mainPanel.add(BorderLayout.CENTER, this.getMainPanel());
         mainPanel.add(BorderLayout.NORTH, this.getTopPanel());
-        mainPanel.add(BorderLayout.SOUTH, this.getFootPanel());
+        mainPanel.add(BorderLayout.SOUTH, getFootPanel());
         container.add(mainPanel);
         this.setVisible(true);
     }
@@ -107,6 +106,16 @@ public class IndexFrame extends CommonFrame {
             }
         });
         return menuButtons;
+    }
+
+    @Override
+    public void Show() {
+        this.setVisible(true);
+    }
+
+    @Override
+    public void Exit() {
+        System.exit(0);
     }
 
 }

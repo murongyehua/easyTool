@@ -43,6 +43,8 @@ public class SystemConfig {
             ,"ComboBox.font"
     };
 
+    public static Boolean canUseScreenCutHotKey = true;
+
     static File exeWorkFile = new File("service.ini");
     public static final String configPath = Objects.requireNonNull(IService.class.getResource("service.ini")).getPath();
 //    public static final String configPath = exeWorkFile.getAbsolutePath();

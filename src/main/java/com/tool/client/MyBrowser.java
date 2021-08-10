@@ -22,6 +22,7 @@ public class MyBrowser extends CommonFrame {
     private boolean browserFocus_ = true;
 
     public MyBrowser(String startURL, boolean useOSR, boolean isTransparent) {
+        this.setDefaultCloseOperation(HIDE_ON_CLOSE);
         // (1) The entry point to JCEF is always the class CefApp. There is only one
         //     instance per application and therefore you have to call the method
         //     "getInstance()" instead of a CTOR.

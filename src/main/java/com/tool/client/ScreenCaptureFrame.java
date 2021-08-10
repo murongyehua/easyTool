@@ -7,6 +7,7 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinUser;
 import com.tool.common.ImageUtil;
+import com.tool.common.SystemConfig;
 import com.tool.common.ThreadPoolManager;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +27,6 @@ public class ScreenCaptureFrame extends CommonFrame {
     final static User32 lib = User32.INSTANCE;
     private final List<Integer> activeKey = new LinkedList<>();
 
-    JButton button;
 
     @Override
     public void initFrame() {
@@ -40,25 +40,32 @@ public class ScreenCaptureFrame extends CommonFrame {
         // top
         JPanel topPanel = new JPanel();
         topPanel.setSize(this.getWidth(), 200);
-        JTextArea useTip = new JTextArea(6,45);
+        JTextArea useTip = new JTextArea(10,48);
         JLabel useTipLabel = new JLabel("使用说明");
-        useTip.setText("在截图助手开启后，点击截图按钮或者使用快捷键Alt+X开启截图(暂不支持自定义快捷键..orz)" +
-                StrUtil.CRLF + "在截图状态下，可以用鼠标左键划定最终截图区域" +
-                StrUtil.CRLF + "双击鼠标左键确定截图，鼠标右键取消截图" +
-                StrUtil.CRLF + "所截图片会在新窗口打开，可以右键图片进行置顶/取消置顶/关闭操作" +
-                StrUtil.CRLF + "同时该图片会自动复制到剪切板~");
+        useTip.setText(" 在截图助手开启后，点击截图按钮或者使用快捷键Alt+X开启截图(暂不支持自定义快捷键..orz)" +
+                StrUtil.CRLF + " 在截图状态下，可以用鼠标左键划定最终截图区域" +
+                StrUtil.CRLF + " 双击鼠标左键确定截图，鼠标右键取消截图" +
+                StrUtil.CRLF + " 所截图片会在新窗口打开，可以右键图片进行置顶/取消置顶/保存/关闭操作" +
+                StrUtil.CRLF + " 同时该图片会自动复制到剪切板~" +
+                StrUtil.CRLF + " 关闭本窗口不影响快捷键继续使用，可以通过下方按钮暂停/恢复快捷键的使用" +
+                StrUtil.CRLF + " 当easyTool主程序退出时，截图程序会自动关闭" +
+                StrUtil.CRLF + " 若有需要，可通过下方链接获取仅有截图功能的程序(更轻便)" +
+                StrUtil.CRLF + " https://wwe.lanzoui.com/i2GrYsg2lyb");
         topPanel.add(useTipLabel);
         topPanel.add(useTip);
         useTip.setEditable(false);
         // center
         JPanel centerPanel = new JPanel();
-        button = new JButton("截图");
-        centerPanel.add(button);
+        JButton cutBtn = new JButton("截图");
+        JButton pauseBtn = new JButton("暂停快捷键");
+        centerPanel.add(cutBtn);
+        centerPanel.add(pauseBtn);
         mainPanel.add(BorderLayout.NORTH, topPanel);
         mainPanel.add(BorderLayout.CENTER, centerPanel);
         this.getContentPane().add(mainPanel);
         //鼠标点击按钮，new 一个ScreenFrame，设置可见，
-        button.addActionListener(e -> activeCat());
+        cutBtn.addActionListener(e -> activeCat());
+        pauseBtn.addActionListener(e -> pause(pauseBtn));
         ThreadPoolManager.addBaseTask(this::startHotKey);
         setVisible(true);
     }
@@ -69,9 +76,8 @@ public class ScreenCaptureFrame extends CommonFrame {
         // 按下
         // 抬起
         WinUser.LowLevelKeyboardProc keyBroadHook = (nCode, wParam, info) -> {
-            if (!this.isVisible()) {
-                Thread.interrupted();
-                return lib.CallNextHookEx(hhk, nCode, wParam, null);
+            if (!SystemConfig.canUseScreenCutHotKey) {
+               return lib.CallNextHookEx(hhk, nCode, wParam, null);
             }
             if (User32.WM_SYSKEYDOWN == wParam.intValue()) {
                 // 按下
@@ -79,6 +85,8 @@ public class ScreenCaptureFrame extends CommonFrame {
                     activeKey.add(info.vkCode);
                     if (activeKey.contains(User32.VK_LMENU) && activeKey.contains(KeyEvent.VK_X)) {
                         activeCat();
+                        activeKey.remove(new Integer(User32.VK_LMENU));
+                        activeKey.remove(new Integer(KeyEvent.VK_X));
                     }
                 }
             }
@@ -102,6 +110,25 @@ public class ScreenCaptureFrame extends CommonFrame {
         AWTUtilities.setWindowOpaque(sf, false);
         sf.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
         sf.setVisible(true);
+    }
+
+    private void pause(JButton button) {
+        if (SystemConfig.canUseScreenCutHotKey) {
+            SystemConfig.canUseScreenCutHotKey = false;
+            button.setText("恢复快捷键");
+        }else {
+            SystemConfig.canUseScreenCutHotKey = true;
+            button.setText("暂停快捷键");
+        }
+    }
+    @Override
+    public void Show() {
+        this.setVisible(true);
+    }
+
+    @Override
+    public void Exit() {
+        this.setVisible(false);
     }
 }
 
@@ -292,5 +319,6 @@ class ShowImageFrame extends JFrame {
             }
         });
     }
+
 
 }
