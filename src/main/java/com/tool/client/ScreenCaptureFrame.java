@@ -11,14 +11,18 @@ import com.tool.common.SystemConfig;
 import com.tool.common.ThreadPoolManager;
 import org.springframework.stereotype.Component;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Component("screenCaptureFrame")
 public class ScreenCaptureFrame extends CommonFrame {
@@ -306,7 +310,33 @@ class ShowImageFrame extends JFrame {
                 }
             }
         });
+        JMenuItem save = new JMenuItem("保存");
+        save.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    try {
+                        JFileChooser chooser = new JFileChooser();
+                        chooser.setDialogTitle("请选择要保存到的目标目录");
+                        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                        int option = chooser.showOpenDialog(temp);
+                        if (option == JFileChooser.APPROVE_OPTION) {
+                            File file = chooser.getSelectedFile();
+                            String name = "screenCapture_" + UUID.randomUUID().toString().replaceAll("-", "") + ".bmp";
+                            file = new File(file.getPath(), name);
+                            ImageIO.write(image, "bmp", file);
+                            JOptionPane.showMessageDialog(null, "保存成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    } catch (FileNotFoundException exception) {
+                        // do nothing
+                    } catch (IOException ioException) {
+                        JOptionPane.showMessageDialog(null, "保存失败", "提示", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
         jp.add(holdTop);
+        jp.add(save);
         jp.add(close);
         this.addMouseListener(new MouseAdapter() {
             @Override

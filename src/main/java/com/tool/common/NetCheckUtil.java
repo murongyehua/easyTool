@@ -12,7 +12,7 @@ public class NetCheckUtil {
         try {
             socket.connect(new InetSocketAddress(host, port), 1000);
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "连接服务器失败", "提示", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "连接服务器失败，请稍候重试或检查网络环境", "提示", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;

@@ -1,8 +1,10 @@
 package com.tool.common;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
 import com.tool.service.IService;
 
-import java.io.File;
+import java.util.List;
 import java.util.Objects;
 
 public class SystemConfig {
@@ -45,8 +47,30 @@ public class SystemConfig {
 
     public static Boolean canUseScreenCutHotKey = true;
 
-    static File exeWorkFile = new File("service.ini");
-    public static final String configPath = Objects.requireNonNull(IService.class.getResource("service.ini")).getPath();
-//    public static final String configPath = exeWorkFile.getAbsolutePath();
+    public static String shjwToken;
+
+    public static Boolean hasShowNotice;
+
+    public static final String ServiceConfigPath = Objects.requireNonNull(IService.class.getResource("service.ini")).getPath();
+    public static final String configPath =  Objects.requireNonNull(IService.class.getResource("config.ini")).getPath();
+//    public static final String ServiceConfigPath = new File("service.ini").getAbsolutePath();
+//    public static final String configPath = new File("config.ini").getAbsolutePath();
+
+
+    public static void updateConfig(String name, String value) {
+        List<String> configList = FileUtil.readLines(SystemConfig.configPath, "utf-8");
+        Integer targetIndex = null;
+        for (int index=0; index<configList.size(); index++) {
+            String old = configList.get(index);
+            if (StrUtil.isNotEmpty(old) && name.equals(old.split("=")[0])) {
+                targetIndex = index;
+                break;
+            }
+        }
+        if (targetIndex != null) {
+            configList.set(targetIndex, String.format("%s=%s", name, value));
+        }
+        FileUtil.writeLines(configList, SystemConfig.configPath, "utf-8", false);
+    }
 
 }

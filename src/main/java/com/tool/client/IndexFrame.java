@@ -3,6 +3,7 @@ package com.tool.client;
 import cn.hutool.core.io.FileUtil;
 import com.tool.common.SystemConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -18,6 +19,9 @@ public class IndexFrame extends CommonFrame {
 
     @Autowired
     private Map<String, CommonFrame> frameMap;
+
+    @Value("${system.notice}")
+    private String noticeMsg;
 
     @Override
     public void initFrame() {
@@ -35,6 +39,13 @@ public class IndexFrame extends CommonFrame {
         mainPanel.add(BorderLayout.SOUTH, getFootPanel());
         container.add(mainPanel);
         this.setVisible(true);
+        if (SystemConfig.hasShowNotice) {
+            Object[] options ={ "知道了", "不再提示" };  //自定义按钮上的文字
+            int key = JOptionPane.showOptionDialog(this, noticeMsg, "公告",JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+            if (key == 1) {
+                SystemConfig.updateConfig("hasShowNotice", "1");
+            }
+        }
     }
 
     /**
@@ -59,13 +70,17 @@ public class IndexFrame extends CommonFrame {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
         mainPanel.setBackground(Color.CYAN);
-        mainPanel.setSize(this.getWidth()-10, 400);
+        mainPanel.setSize(this.getWidth(), 400);
         JPanel menuName = new JPanel();
-        menuName.setLayout(new FlowLayout(FlowLayout.LEFT, 0,0));
-        menuName.setSize(this.getWidth()-10, 25);
+        menuName.setSize(this.getWidth(), 25);
         JLabel nameContent = new JLabel("已开启的功能列表");
         nameContent.setFont(new Font("微软雅黑", Font.BOLD, 12));
+        JButton noticeBtn = new JButton(new ImageIcon(Objects.requireNonNull(IndexFrame.class.getResource("notice.png"))));
+        noticeBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, noticeMsg, "公告", JOptionPane.PLAIN_MESSAGE));
+        menuName.setLayout(new BoxLayout(menuName, BoxLayout.LINE_AXIS));
         menuName.add(nameContent);
+        menuName.add(Box.createHorizontalGlue());
+        menuName.add(noticeBtn);
         JPanel menu = new JPanel();
         menu.setSize(this.getWidth()-10, 375);
         menu.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
@@ -89,7 +104,7 @@ public class IndexFrame extends CommonFrame {
     }
 
     private List<MenuButton> renderMenu() {
-        List<String> serviceConfigLines = FileUtil.readLines(SystemConfig.configPath, "utf-8");
+        List<String> serviceConfigLines = FileUtil.readLines(SystemConfig.ServiceConfigPath, "utf-8");
         List<MenuButton> menuButtons = new LinkedList<>();
         serviceConfigLines.forEach(serviceConfig -> {
             String[] cs = serviceConfig.split("\\|\\|");
