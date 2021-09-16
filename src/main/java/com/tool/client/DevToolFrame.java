@@ -17,12 +17,16 @@ public class DevToolFrame extends CommonFrame{
     JScrollPane createUUIDPanel = new JScrollPane(createUUIDResult);
     // 替换
     JTextArea oriContentText = new JTextArea(4, 45);
-    JTextField regText = new JTextField(65);
+    JTextField regText = new JTextField(30);
     JTextArea resContentText = new JTextArea(7, 45);
     JLabel oriContentLabel = new JLabel("请输入原始内容");
     JScrollPane oriContentPanel = new JScrollPane(oriContentText);
     JLabel regLabel = new JLabel("要替换的正则");
     JScrollPane resContentPanel = new JScrollPane(resContentText);
+    JLabel preContentLabel = new JLabel("前缀");
+    JLabel sufContentLabel = new JLabel("后缀");
+    JTextField preContentText = new JTextField(15);
+    JTextField sufContentText = new JTextField(15);
     JPanel replacePanel = new JPanel();
 
     @Override
@@ -51,6 +55,10 @@ public class DevToolFrame extends CommonFrame{
         replacePanel.add(oriContentPanel);
         replacePanel.add(regLabel);
         replacePanel.add(regText);
+        replacePanel.add(preContentLabel);
+        replacePanel.add(preContentText);
+        replacePanel.add(sufContentLabel);
+        replacePanel.add(sufContentText);
         replacePanel.add(resContentPanel);
 
         JTabbedPane tabPane = new JTabbedPane();
@@ -166,13 +174,13 @@ public class DevToolFrame extends CommonFrame{
               }
               switch (Objects.requireNonNull(typeBox.getSelectedItem()).toString()) {
                   case "uuid":
-                      resContentText.setText(oriContent.replaceAll(reg, IdUtil.simpleUUID()));
+                      resContentText.setText(oriContent.replaceAll(reg, preContentText.getText() + IdUtil.simpleUUID() + sufContentText.getText()));
                       break;
                   case "原始uuid":
-                      resContentText.setText(oriContent.replaceAll(reg, IdUtil.randomUUID()));
+                      resContentText.setText(oriContent.replaceAll(reg, preContentText.getText() + IdUtil.randomUUID() + sufContentText.getText()));
                       break;
                   case "纯数字":
-                      resContentText.setText(oriContent.replaceAll(reg, String.valueOf(IdUtil.getSnowflake().nextId())));
+                      resContentText.setText(oriContent.replaceAll(reg, preContentText.getText() + IdUtil.getSnowflake().nextId() + sufContentText.getText()));
                       break;
                   default:
                       break;

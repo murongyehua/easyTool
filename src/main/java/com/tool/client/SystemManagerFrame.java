@@ -111,7 +111,7 @@ public class SystemManagerFrame extends CommonFrame{
         versionLabel.setFont(new Font("微软雅黑", Font.BOLD, 12));
         JPanel version = new JPanel();
         version.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 3));
-        version.add(new JLabel(String.format("当前版本: %s(灰度测试)", this.version)));
+        version.add(new JLabel(String.format("当前版本: %s", this.version)));
         JButton checkVersionBtn = new JButton("检查更新");
         checkVersionBtn.setUI(new BEButtonUI(). setNormalColor(BEButtonUI.NormalColor.normal));
         checkVersionBtn.addActionListener(e -> {
@@ -188,6 +188,7 @@ public class SystemManagerFrame extends CommonFrame{
     }
 
     private void initMenus() {
+        menuClassMap.clear();
         serviceConfigLines = FileUtil.readLines(SystemConfig.ServiceConfigPath, "utf-8");
         for (int index=1;index<serviceConfigLines.size();index++) {
             String lineContent = serviceConfigLines.get(index);

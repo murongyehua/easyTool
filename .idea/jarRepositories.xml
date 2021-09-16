@@ -37,9 +37,19 @@
       <option name="url" value="http://nexus.simulate.com:8081/repository/maven-public" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="nexus-snapshots" />
+      <option name="name" value="nexus-snapshots" />
+      <option name="url" value="https://maven.aliyun.com/repository/public/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="nexus-releases" />
       <option name="name" value="nexus-releases" />
       <option name="url" value="http://nexus-releases" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="nexus-releases" />
+      <option name="name" value="nexus-releases" />
+      <option name="url" value="https://maven.aliyun.com/repository/public/" />
     </remote-repository>
   </component>
 </project>
